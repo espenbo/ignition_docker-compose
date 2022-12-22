@@ -5,18 +5,24 @@ services:
     ports:
       - "1088:8088"     # Port 1088 is visable out side of the docker
     stop_grace_period: 30s
-    secrets:
-      - gateway-password
+#    secrets:
+#      - gateway-password
     volumes:
       # - ./gateway_backup.gwbk:/restore.gwbk
-      - gateway_data_ignition_test1:/var/lib/ignition/data
+      - gateway_data_ignition_test2:/var/lib/ignition/data
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
-    env_file: ignition.env  # optionally specify variables in a file, or using `environment:` below
-#    environment:
+#    env_file: ignition.env  # optionally specify variables in a file, or using `environment:` below
+    environment:
+      GATEWAY_ADMIN_USERNAME: ignition		# 8.1.8+	Defaults to admin when not specified, used to set value for initial gateway auto-commissioning.
+      GATEWAY_ADMIN_PASSWORD: ignition		# 8.1.8+	Password value or salted hash to be used for initial gateway auto-commissioning.
+      GATEWAY_HTTP_PORT: 8088				# 8.1.8+	Defaults to 8088 when not specified, used to override the HTTP port used by the gateway container.
+      GATEWAY_HTTPS_PORT: 8043				# 8.1.8+	Defaults to 8043 when not specified, used to override the HTTPS port used by the gateway container.
+      GATEWAY_GAN_PORT: 8060				# 8.1.8+	Defaults to 8060 when not specified, used to override the Gateway Network port used by the gateway container.
+      IGNITION_EDITION: maker				# 8.1.8+	Set to standard, edge , or maker , used to set value for initial gateway auto-commissioning.
 #      GATEWAY_ADMIN_PASSWORD_FILE: /run/secrets/gateway-password
 
   db:
@@ -26,22 +32,26 @@ services:
       # only for external connectivity to the database.
       - "1306:3306"         # Port 1088 is visable out side of the docker
     volumes:
-     - db_data_ignition_test1:/var/lib/mysql
+     - db_data_ignition_test2:/var/lib/mysql
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
-    env_file: mariadb.env  # optionally specify variables in a file, or using `environment:` below
+ #   env_file: mariadb.env  # optionally specify variables in a file, or using `environment:` below
  #   secrets:
  #     - mysql-root-password
  #     - mysql-password
- #   environment:
+    environment:
  #     # See https://hub.docker.com/_/mysql/ for more information
  #     MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-password
  #     MYSQL_DATABASE: ignition
  #     MYSQL_USER: ignition
  #     MYSQL_PASSWORD_FILE: /run/secrets/mysql-password
+      MARIADB_ROOT_PASSWORD: ignition			# specify the password for the root user
+      MARIADB_DATABASE: ignition				# create a database with this name
+      MARIADB_USER: ignition					# create a user with this name, with all privileges on MARIADB_DATABASE if specified
+      MARIADB_PASSWORD: ignition				# password for above user
 
 #secrets:
 #  mysql-root-password:
@@ -52,5 +62,5 @@ services:
 #    file: ./secrets/GATEWAY_PASSWORD
 
 volumes:
-  gateway_data_ignition_test1:
-  db_data_ignition_test1:
+  gateway_data_ignition_test2:
+  db_data_ignition_test2:

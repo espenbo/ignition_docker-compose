@@ -1,0 +1,56 @@
+version: '3.1'
+services:
+  gateway:
+    image: inductiveautomation/ignition:latest  # You can change `latest` to a specific version, e.g. `8.0.5`
+    ports:
+      - "1088:8088"     # Port 1088 is visable out side of the docker
+    stop_grace_period: 30s
+    secrets:
+      - gateway-password
+    volumes:
+      # - ./gateway_backup.gwbk:/restore.gwbk
+      - gateway_data_ignition_test1:/var/lib/ignition/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    env_file: ignition.env  # optionally specify variables in a file, or using `environment:` below
+#    environment:
+#      GATEWAY_ADMIN_PASSWORD_FILE: /run/secrets/gateway-password
+
+  db:
+    image: mariadb:latest
+    ports:
+      # Note that the 3306 port doesn't need to be published here for the gateway container to connect, 
+      # only for external connectivity to the database.
+      - "1306:3306"         # Port 1088 is visable out side of the docker
+    volumes:
+     - db_data_ignition_test1:/var/lib/mysql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    env_file: mariadb.env  # optionally specify variables in a file, or using `environment:` below
+ #   secrets:
+ #     - mysql-root-password
+ #     - mysql-password
+ #   environment:
+ #     # See https://hub.docker.com/_/mysql/ for more information
+ #     MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-password
+ #     MYSQL_DATABASE: ignition
+ #     MYSQL_USER: ignition
+ #     MYSQL_PASSWORD_FILE: /run/secrets/mysql-password
+
+#secrets:
+#  mysql-root-password:
+#    file: ./secrets/MYSQL_ROOT_PASSWORD
+#  mysql-password:
+#    file: ./secrets/MYSQL_PASSWORD
+#  gateway-password:
+#    file: ./secrets/GATEWAY_PASSWORD
+
+volumes:
+  gateway_data_ignition_test1:
+  db_data_ignition_test1:

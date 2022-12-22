@@ -16,7 +16,6 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
-#    env_file: ignition.env  # optionally specify variables in a file, or using `environment:` below
     environment:
       TZ: Europe/Oslo
     networks:
